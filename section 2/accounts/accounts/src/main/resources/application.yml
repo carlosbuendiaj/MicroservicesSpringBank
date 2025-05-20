@@ -14,3 +14,25 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  config:
+    import:
+      - "application_prod.yml"
+      - "application_qa.yml"
+  profiles:
+    active:
+      - "qa"
+
+build:
+  version: "3.0"
+
+
+accounts:
+  message: "Welcome to bank accounts related local APIs"
+  contactDetails:
+    name: "Carlos buendia"
+    email: "carlos@buendia.com"
+  onCallSupport:
+    - 674571968
+    - 692245807
+
+

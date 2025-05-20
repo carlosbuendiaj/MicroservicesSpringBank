@@ -1,6 +1,7 @@
 package com.carlosb.accounts.controller;
 
 
+import com.carlosb.accounts.dto.AccountsContactInfoDto;
 import com.carlosb.accounts.service.IAccountsService;
 import com.carlosb.accounts.constants.AccountConstants;
 import com.carlosb.accounts.dto.CustomerDto;
@@ -15,6 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +28,25 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "CRUS REST APIS for Accounts", description = "Create, Update, Fetch, And Delete account details")
 @RestController
 @RequestMapping(path ="/api", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
+
 @Validated
 public class AccountsController {
 
     private IAccountsService iAccountsService;
+
+    public AccountsController(IAccountsService iAccountsService){
+        this.iAccountsService = iAccountsService;
+    }
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private AccountsContactInfoDto accountsContactInfoDto;
+
 
     @Operation(
             summary = "Create a new account",
@@ -166,4 +184,25 @@ public class AccountsController {
                     .body(new ResponseDto(AccountConstants.STATUS_417, AccountConstants.MESSAGE_417_DELETE));
         }
     }
-}
+
+    @GetMapping("/build-info")
+    public ResponseEntity<String> getBuildInfo(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(buildVersion);
+    }
+
+    @GetMapping("/java-version")
+    public ResponseEntity<String> getJavaVersion(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountsContactInfoDto> getContactInfo(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountsContactInfoDto);
+    }
+ }
